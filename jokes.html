@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анекдоти - Samsung</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .joke-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .joke-display {
+            background: linear-gradient(180deg, rgba(10,32,60,0.3), rgba(6,18,36,0.15));
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 30px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            font-size: 1.3rem;
+            line-height: 1.6;
+            color: #eaf6ff;
+            transition: all 0.5s ease;
+        }
+
+        .joke-footer {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(76, 217, 100, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(76, 217, 100, 0.3);
+        }
+
+        .joke-footer p {
+            color: #4CD964;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="brand">Samsung - Анекдоти</div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="admin.php">Адмін</a></li>
+                        <li><a href="smartphones.html">Смартфони</a></li>
+                        <li><a href="house.html">Побутова техніка</a></li>
+                        <li><a href="tv.html">Телевізори</a></li>
+                        <li><a href="shares.html">Акції</a></li>
+                        <li><a href="support.html">Підтримка</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                        <li><a href="survey.php">Анкета</a></li>
+                        <li><a href="jokes.html">Анекдоти</a></li>
+                        <li><a href="characters.html">Персонажі</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <h2>Анекдоти: Увага чорний гумор!</h2>
+            
+            <div class="joke-container">
+                <div id="jokeDisplay" class="joke-display">
+                    <p>Натисніть кнопку, щоб отримати жарт!</p>
+                </div>
+                
+                <button id="getJokeBtn" class="cta-button">🎭 Отримати випадковий жарт</button>
+                
+                <div class="joke-footer">
+                    <p>Якщо вам сподобався один з жартів і ви від душі посміялися, то ви зобов'язані придбати у нас одну одиницю продукції! 😄</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <small>© 2025 Samsung -- демонстраційний сайт</small>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Сторінка завантажена!');
+            
+            const jokeDisplay = document.getElementById('jokeDisplay');
+            const getJokeBtn = document.getElementById('getJokeBtn');
+
+            // Масив з усіма жартами
+            const jokes = [
+                "Приходять сіамські близнюки на вечірку\n- І одна з них каже\n- Зараз як відірвемося!",
+                "-Дивися людина на рейках!\n-Де?\n-Проїхали!",
+                "-Знаєте що бачать оптимісти на цвинтарі?\n-Що?\n-Одні плюси",
+                "Один хлопчина вирішив підійти з вагітною жінкою, вагітна жінка перемогла так як билася не одна",
+                "Сидить хлопчик плаче і сміється\n-Гей хлопчик що плачеш?\n-гранату вкрали\n-А що смієшся?\n-Тільки чека залишилася.",
+                "Чорний пожартував перед людьми, але його ніхто не викупив",
+                "Лікар каже хворому\n-Вам залишилася жити 50 секунд\nХворий: дайте телефон попрощатися з мамою і сказати те, що я її люблю\nЛікар:\n-Хвилинку",
+                "В маршрутку навпроти мене сіла дівчина з мітлою. Ледве стримався, щоб не сказати: 'Що, не заводиться?'",
+                "Як називається похорон електрика? Заземлення.",
+                "Син каже:\n-Тату досить жартувати, що я без рук!\nТато:\n-По руках!"
+            ];
+
+            let currentJokeIndex = -1;
+
+            function showRandomJoke() {
+                console.log('Кнопка натиснута!');
+                
+                let newIndex;
+                // Перевіряємо, щоб не показувати той самий жарт двічі поспіль
+                do {
+                    newIndex = Math.floor(Math.random() * jokes.length);
+                } while (newIndex === currentJokeIndex && jokes.length > 1);
+                
+                currentJokeIndex = newIndex;
+                const selectedJoke = jokes[currentJokeIndex];
+                
+                console.log('Обраний жарт:', currentJokeIndex, selectedJoke);
+
+                // Додаємо анімацію
+                jokeDisplay.style.opacity = '0';
+                
+                setTimeout(() => {
+                    jokeDisplay.innerHTML = `<p style="white-space: pre-line;">${selectedJoke}</p>`;
+                    jokeDisplay.style.opacity = '1';
+                }, 300);
+            }
+
+            // Додаємо обробник події для кнопки
+            getJokeBtn.addEventListener('click', showRandomJoke);
+
+            // Показуємо перший жарт при завантаженні сторінки
+            showRandomJoke();
+        });
+    </script>
+</body>
+</html>

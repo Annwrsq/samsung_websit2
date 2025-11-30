@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Персонажі Star Wars - Samsung</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .characters-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .sort-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn:hover {
+            background: linear-gradient(135deg, #5a9ff2, #458acd);
+            transform: translateY(-2px);
+        }
+
+        .sort-btn.active {
+            background: linear-gradient(135deg, #4CD964, #34C759);
+        }
+
+        .refresh-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #FF9500, #FF8A00);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: linear-gradient(135deg, #FFA520, #FF9A10);
+            transform: translateY(-2px);
+        }
+
+        .characters-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: linear-gradient(180deg, rgba(10,32,60,0.3), rgba(6,18,36,0.15));
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .characters-table th {
+            background: rgba(18,57,90,0.4);
+            padding: 15px;
+            text-align: left;
+            color: #d8f5ff;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .characters-table th:hover {
+            background: rgba(74, 144, 226, 0.3);
+        }
+
+        .characters-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #eaf6ff;
+        }
+
+        .characters-table tr:hover {
+            background: rgba(255,255,255,0.05);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #bfe8ff;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #FF3B30;
+            background: rgba(255, 59, 48, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 59, 48, 0.3);
+        }
+
+        .affiliation-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .affiliation-rebel {
+            background: rgba(74, 144, 226, 0.3);
+            border: 1px solid rgba(74, 144, 226, 0.5);
+        }
+
+        .affiliation-empire {
+            background: rgba(255, 59, 48, 0.3);
+            border: 1px solid rgba(255, 59, 48, 0.5);
+        }
+
+        .affiliation-jedi {
+            background: rgba(76, 217, 100, 0.3);
+            border: 1px solid rgba(76, 217, 100, 0.5);
+        }
+
+        .affiliation-sith {
+            background: rgba(255, 45, 85, 0.3);
+            border: 1px solid rgba(255, 45, 85, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div class="brand">Samsung - Персонажі Star Wars</div>
+                <nav class="nav">
+                    <ul>
+                        <li><a href="index.html">Головна</a></li>
+                        <li><a href="admin.php">Адмін</a></li>
+                        <li><a href="smartphones.html">Смартфони</a></li>
+                        <li><a href="house.html">Побутова техніка</a></li>
+                        <li><a href="tv.html">Телевізори</a></li>
+                        <li><a href="shares.html">Акції</a></li>
+                        <li><a href="support.html">Підтримка</a></li>
+                        <li><a href="about.html">Про нас</a></li>
+                        <li><a href="survey.php">Анкета</a></li>
+                        <li><a href="jokes.html">Анекдоти</a></li>
+                        <li><a href="characters.html">Персонажі</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="section">
+            <h2>🗺️ Персонажі Star Wars</h2>
+            
+            <div class="characters-container">
+                <div class="controls">
+                    <div class="sort-controls">
+                        <span>Сортування:</span>
+                        <button class="sort-btn" data-sort="name">За іменем</button>
+                        <button class="sort-btn" data-sort="affiliation">За фракцією</button>
+                    </div>
+                    <button class="refresh-btn" id="refreshData">🔄 Оновити дані</button>
+                </div>
+
+                <div id="tableContainer">
+                    <div class="loading">⏳ Завантаження даних...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <small>© 2025 Samsung -- демонстраційний сайт</small>
+        </div>
+    </footer>
+
+    <!-- Підключаємо jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            let charactersData = [];
+            let currentSort = 'name';
+            let sortAscending = true;
+
+            // Функція для отримання даних з API
+            function fetchData() {
+                $('#tableContainer').html('<div class="loading">⏳ Завантаження даanych...</div>');
+                
+                $.ajax({
+                    url: 'http://lab.vntu.org/api-server/lab7.php',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        charactersData = data;
+                        renderTable();
+                    },
+                    error: function(xhr, status, error) {
+                        $('#tableContainer').html(
+                            '<div class="error">❌ Помилка завантаження даних: ' + 
+                            error + '. Перевірте підключення до інтернету.</div>'
+                        );
+                        console.error('Помилка AJAX:', error);
+                    }
+                });
+            }
+
+            // Функція для відображення таблиці
+            function renderTable() {
+                if (charactersData.length === 0) {
+                    $('#tableContainer').html('<div class="error">❌ Дані не знайдено</div>');
+                    return;
+                }
+
+                // Сортуємо дані
+                const sortedData = sortData(charactersData, currentSort, sortAscending);
+
+                // Створюємо таблицю
+                let tableHTML = `
+                    <table class="characters-table fade-in">
+                        <thead>
+                            <tr>
+                                <th data-sort="name">Ім'я 🔽</th>
+                                <th data-sort="height">Зріст</th>
+                                <th data-sort="mass">Вага</th>
+                                <th data-sort="gender">Стать</th>
+                                <th data-sort="affiliation">Фракція 🔽</th>
+                                <th>Опис</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                sortedData.forEach(function(character) {
+                    const affiliationClass = getAffiliationClass(character.affiliation);
+                    
+                    tableHTML += `
+                        <tr>
+                            <td><strong>${escapeHtml(character.name)}</strong></td>
+                            <td>${character.height || 'Н/Д'}</td>
+                            <td>${character.mass || 'Н/Д'}</td>
+                            <td>${escapeHtml(character.gender) || 'Н/Д'}</td>
+                            <td>
+                                <span class="affiliation-badge ${affiliationClass}">
+                                    ${escapeHtml(character.affiliation) || 'Невідомо'}
+                                </span>
+                            </td>
+                            <td>${escapeHtml(character.description) || 'Опис відсутній'}</td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `
+                        </tbody>
+                    </table>
+                `;
+
+                $('#tableContainer').html(tableHTML);
+                
+                // Додаємо обробники кліку на заголовки
+                $('.characters-table th[data-sort]').click(function() {
+                    const sortField = $(this).data('sort');
+                    toggleSort(sortField);
+                });
+            }
+
+            // Функція для сортування даних
+            function sortData(data, field, ascending) {
+                return data.sort(function(a, b) {
+                    let aValue = a[field] || '';
+                    let bValue = b[field] || '';
+                    
+                    // Для числових полів
+                    if (field === 'height' || field === 'mass') {
+                        aValue = parseFloat(aValue) || 0;
+                        bValue = parseFloat(bValue) || 0;
+                    } else {
+                        // Для текстових полів
+                        aValue = String(aValue).toLowerCase();
+                        bValue = String(bValue).toLowerCase();
+                    }
+                    
+                    if (ascending) {
+                        return aValue > bValue ? 1 : -1;
+                    } else {
+                        return aValue < bValue ? 1 : -1;
+                    }
+                });
+            }
+
+            // Функція для зміни сортування
+            function toggleSort(field) {
+                if (currentSort === field) {
+                    sortAscending = !sortAscending;
+                } else {
+                    currentSort = field;
+                    sortAscending = true;
+                }
+                
+                // Оновлюємо активні кнопки
+                $('.sort-btn').removeClass('active');
+                $(`.sort-btn[data-sort="${field}"]`).addClass('active');
+                
+                renderTable();
+            }
+
+            // Функція для отримання класу для фракції
+            function getAffiliationClass(affiliation) {
+                if (!affiliation) return '';
+                
+                const aff = affiliation.toLowerCase();
+                if (aff.includes('rebel') || aff.includes('resistance')) return 'affiliation-rebel';
+                if (aff.includes('empire') || aff.includes('first order')) return 'affiliation-empire';
+                if (aff.includes('jedi')) return 'affiliation-jedi';
+                if (aff.includes('sith')) return 'affiliation-sith';
+                return '';
+            }
+
+            // Функція для екранування HTML
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Обробники подій
+            $('#refreshData').click(fetchData);
+            
+            $('.sort-btn').click(function() {
+                const sortField = $(this).data('sort');
+                toggleSort(sortField);
+            });
+
+            // Завантажуємо дані при завантаженні сторінки
+            fetchData();
+        });
+    </script>
+</body>
+</html>

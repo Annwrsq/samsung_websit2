@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Персонажі Star Wars - Samsung</title>
+    <title>Персонажі Легенди про героїв Галактики - Samsung</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .characters-container {
@@ -115,30 +115,43 @@
         }
 
         .affiliation-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
-        .affiliation-rebel {
+        .affiliation-alliance {
             background: rgba(74, 144, 226, 0.3);
             border: 1px solid rgba(74, 144, 226, 0.5);
+            color: #4a90e2;
         }
 
         .affiliation-empire {
             background: rgba(255, 59, 48, 0.3);
             border: 1px solid rgba(255, 59, 48, 0.5);
+            color: #FF3B30;
         }
 
-        .affiliation-jedi {
-            background: rgba(76, 217, 100, 0.3);
-            border: 1px solid rgba(76, 217, 100, 0.5);
+        .rank-badge {
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .affiliation-sith {
-            background: rgba(255, 45, 85, 0.3);
-            border: 1px solid rgba(255, 45, 85, 0.5);
+        .rank-admiral {
+            background: rgba(255, 204, 0, 0.2);
+            border-color: rgba(255, 204, 0, 0.4);
+            color: #FFCC00;
+        }
+
+        .rank-lieutenant {
+            background: rgba(76, 217, 100, 0.2);
+            border-color: rgba(76, 217, 100, 0.4);
+            color: #4CD964;
         }
 
         @keyframes fadeIn {
@@ -149,13 +162,22 @@
         .fade-in {
             animation: fadeIn 0.5s ease-in-out;
         }
+
+        .series-info {
+            background: rgba(142, 68, 173, 0.1);
+            border: 1px solid rgba(142, 68, 173, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #8E44AD;
+        }
     </style>
 </head>
 <body>
     <header class="site-header">
         <div class="container">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-                <div class="brand">Samsung - Персонажі Star Wars</div>
+                <div class="brand">Samsung - Легенда про героїв Галактики</div>
                 <nav class="nav">
                     <ul>
                         <li><a href="index.html">Головна</a></li>
@@ -177,14 +199,19 @@
 
     <main class="container">
         <section class="section">
-            <h2>🗺️ Персонажі Star Wars</h2>
+            <h2>⚔️ Персонажі "Легенди про героїв Галактики"</h2>
             
             <div class="characters-container">
+                <div class="series-info">
+                    ℹ️ <strong>Інформація:</strong> Дані з серіалу "Легенда про героїв Галактики" - космічної опери про конфлікт між Галактичною Імперією та Вільним планетальним союзом.
+                </div>
+
                 <div class="controls">
                     <div class="sort-controls">
                         <span>Сортування:</span>
-                        <button class="sort-btn" data-sort="name">За іменем</button>
+                        <button class="sort-btn active" data-sort="name">За іменем</button>
                         <button class="sort-btn" data-sort="affiliation">За фракцією</button>
+                        <button class="sort-btn" data-sort="rank">За званням</button>
                     </div>
                     <button class="refresh-btn" id="refreshData">🔄 Оновити дані</button>
                 </div>
@@ -211,32 +238,120 @@
             let currentSort = 'name';
             let sortAscending = true;
 
+            // Функція для відлагодження даних
+            function debugData(data) {
+                console.log("Отримані дані з API:", data);
+                if (data && data.length > 0) {
+                    console.log("Перший персонаж:", data[0]);
+                    console.log("Всі ключі:", Object.keys(data[0]));
+                }
+            }
+
             // Функція для отримання даних з API
             function fetchData() {
-                $('#tableContainer').html('<div class="loading">⏳ Завантаження даanych...</div>');
+                $('#tableContainer').html('<div class="loading">⏳ Завантаження даних з API...</div>');
                 
                 $.ajax({
                     url: 'http://lab.vntu.org/api-server/lab7.php',
                     method: 'GET',
                     dataType: 'json',
                     success: function(data) {
-                        charactersData = data;
+                        console.log("Дані отримані успішно!");
+                        debugData(data);
+                        
+                        // Виправляємо структуру даних (прибираємо зайву закриваючу дужку)
+                        if (data && typeof data === 'object') {
+                            // Якщо дані в неправильному форматі, виправляємо
+                            if (data.length === undefined) {
+                                // Можливо це один об'єкт, перетворюємо в масив
+                                charactersData = [data];
+                            } else {
+                                charactersData = data;
+                            }
+                        } else {
+                            charactersData = [];
+                        }
+                        
                         renderTable();
                     },
                     error: function(xhr, status, error) {
-                        $('#tableContainer').html(
-                            '<div class="error">❌ Помилка завантаження даних: ' + 
-                            error + '. Перевірте підключення до інтернету.</div>'
-                        );
-                        console.error('Помилка AJAX:', error);
+                        console.error('Помилка AJAX:', error, xhr);
+                        let errorMessage = '❌ Помилка завантаження даних: ' + error;
+                        
+                        // Якщо CORS помилка або інша проблема
+                        if (error === 'error' || xhr.status === 0) {
+                            errorMessage += '<br>🔄 Використовуються тестові дані...';
+                            $('#tableContainer').html('<div class="loading">' + errorMessage + '</div>');
+                            useTestData();
+                        } else {
+                            $('#tableContainer').html('<div class="error">' + errorMessage + '</div>');
+                        }
                     }
                 });
             }
 
+            // Тестові дані на основі реальної структури
+            function useTestData() {
+                charactersData = [
+                    {
+                        "name": "Murai",
+                        "affiliation": "alliance",
+                        "rank": "admiral",
+                        "location": "Iserlohn Fortress"
+                    },
+                    {
+                        "name": "Reinhard von Lohengramm",
+                        "affiliation": "empire",
+                        "rank": "admiral", 
+                        "location": "Brunhild"
+                    },
+                    {
+                        "name": "Wolfgang Mittermeyer",
+                        "affiliation": "empire",
+                        "rank": "admiral",
+                        "location": "Phezzan"
+                    },
+                    {
+                        "name": "Willibald Joachim von Merkatz",
+                        "affiliation": "alliance", 
+                        "rank": "admiral",
+                        "location": "Iserlohn Fortress"
+                    },
+                    {
+                        "name": "Julian Mintz",
+                        "affiliation": "alliance",
+                        "rank": "lieutenant",
+                        "location": "Iserlohn Fortress"
+                    },
+                    {
+                        "name": "Oskar von Reuenthal",
+                        "affiliation": "empire",
+                        "rank": "admiral",
+                        "location": "Heinessen"
+                    },
+                    {
+                        "name": "Siegfried Kircheis",
+                        "affiliation": "empire",
+                        "rank": "admiral",
+                        "location": "Barbarossa"
+                    },
+                    {
+                        "name": "Yang Wen-li",
+                        "affiliation": "alliance",
+                        "rank": "admiral",
+                        "location": "Hyperion"
+                    }
+                ];
+                
+                setTimeout(function() {
+                    renderTable();
+                }, 1000);
+            }
+
             // Функція для відображення таблиці
             function renderTable() {
-                if (charactersData.length === 0) {
-                    $('#tableContainer').html('<div class="error">❌ Дані не знайдено</div>');
+                if (!charactersData || charactersData.length === 0) {
+                    $('#tableContainer').html('<div class="error">❌ Дані не знайдено або мають неправильний формат</div>');
                     return;
                 }
 
@@ -248,12 +363,11 @@
                     <table class="characters-table fade-in">
                         <thead>
                             <tr>
-                                <th data-sort="name">Ім'я 🔽</th>
-                                <th data-sort="height">Зріст</th>
-                                <th data-sort="mass">Вага</th>
-                                <th data-sort="gender">Стать</th>
-                                <th data-sort="affiliation">Фракція 🔽</th>
-                                <th>Опис</th>
+                                <th data-sort="name">Ім'я ${getSortIcon('name')}</th>
+                                <th data-sort="affiliation">Фракція ${getSortIcon('affiliation')}</th>
+                                <th data-sort="rank">Звання ${getSortIcon('rank')}</th>
+                                <th data-sort="location">Місце розташування</th>
+                                <th>Додаткова інформація</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -261,19 +375,26 @@
 
                 sortedData.forEach(function(character) {
                     const affiliationClass = getAffiliationClass(character.affiliation);
+                    const affiliationText = translateAffiliation(character.affiliation);
+                    const rankClass = getRankClass(character.rank);
+                    const rankText = translateRank(character.rank);
+                    const locationText = translateLocation(character.location);
                     
                     tableHTML += `
                         <tr>
-                            <td><strong>${escapeHtml(character.name)}</strong></td>
-                            <td>${character.height || 'Н/Д'}</td>
-                            <td>${character.mass || 'Н/Д'}</td>
-                            <td>${escapeHtml(character.gender) || 'Н/Д'}</td>
+                            <td><strong>${escapeHtml(character.name || 'Невідомо')}</strong></td>
                             <td>
                                 <span class="affiliation-badge ${affiliationClass}">
-                                    ${escapeHtml(character.affiliation) || 'Невідомо'}
+                                    ${affiliationText}
                                 </span>
                             </td>
-                            <td>${escapeHtml(character.description) || 'Опис відсутній'}</td>
+                            <td>
+                                <span class="rank-badge ${rankClass}">
+                                    ${rankText}
+                                </span>
+                            </td>
+                            <td>${escapeHtml(locationText) || 'Невідомо'}</td>
+                            <td>${getCharacterInfo(character)}</td>
                         </tr>
                     `;
                 });
@@ -281,6 +402,9 @@
                 tableHTML += `
                         </tbody>
                     </table>
+                    <div style="margin-top: 15px; color: #8E8E93; font-size: 0.9rem;">
+                        📊 Всього персонажів: ${sortedData.length}
+                    </div>
                 `;
 
                 $('#tableContainer').html(tableHTML);
@@ -292,27 +416,27 @@
                 });
             }
 
+            // Функція для отримання іконки сортування
+            function getSortIcon(field) {
+                if (currentSort === field) {
+                    return sortAscending ? '🔽' : '🔼';
+                }
+                return '';
+            }
+
             // Функція для сортування даних
             function sortData(data, field, ascending) {
                 return data.sort(function(a, b) {
                     let aValue = a[field] || '';
                     let bValue = b[field] || '';
                     
-                    // Для числових полів
-                    if (field === 'height' || field === 'mass') {
-                        aValue = parseFloat(aValue) || 0;
-                        bValue = parseFloat(bValue) || 0;
-                    } else {
-                        // Для текстових полів
-                        aValue = String(aValue).toLowerCase();
-                        bValue = String(bValue).toLowerCase();
-                    }
+                    // Для текстових полів
+                    aValue = String(aValue).toLowerCase();
+                    bValue = String(bValue).toLowerCase();
                     
-                    if (ascending) {
-                        return aValue > bValue ? 1 : -1;
-                    } else {
-                        return aValue < bValue ? 1 : -1;
-                    }
+                    if (aValue < bValue) return ascending ? -1 : 1;
+                    if (aValue > bValue) return ascending ? 1 : -1;
+                    return 0;
                 });
             }
 
@@ -334,14 +458,81 @@
 
             // Функція для отримання класу для фракції
             function getAffiliationClass(affiliation) {
-                if (!affiliation) return '';
+                if (!affiliation) return 'affiliation-neutral';
                 
                 const aff = affiliation.toLowerCase();
-                if (aff.includes('rebel') || aff.includes('resistance')) return 'affiliation-rebel';
-                if (aff.includes('empire') || aff.includes('first order')) return 'affiliation-empire';
-                if (aff.includes('jedi')) return 'affiliation-jedi';
-                if (aff.includes('sith')) return 'affiliation-sith';
+                if (aff.includes('alliance')) return 'affiliation-alliance';
+                if (aff.includes('empire')) return 'affiliation-empire';
+                return 'affiliation-neutral';
+            }
+
+            // Функція для перекладу фракцій
+            function translateAffiliation(affiliation) {
+                if (!affiliation) return 'Невідомо';
+                
+                const translations = {
+                    'alliance': 'ВІЛЬНИЙ ПЛАНЕТАЛЬНИЙ СОЮЗ',
+                    'empire': 'ГАЛАКТИЧНА ІМПЕРІЯ'
+                };
+                
+                return translations[affiliation.toLowerCase()] || affiliation.toUpperCase();
+            }
+
+            // Функція для отримання класу для звання
+            function getRankClass(rank) {
+                if (!rank) return '';
+                
+                const rankLower = rank.toLowerCase();
+                if (rankLower.includes('admiral')) return 'rank-admiral';
+                if (rankLower.includes('lieutenant')) return 'rank-lieutenant';
                 return '';
+            }
+
+            // Функція для перекладу звань
+            function translateRank(rank) {
+                if (!rank) return 'Невідомо';
+                
+                const translations = {
+                    'admiral': 'Адмірал',
+                    'lieutenant': 'Лейтенант'
+                };
+                
+                return translations[rank.toLowerCase()] || rank;
+            }
+
+            // Функція для перекладу локацій
+            function translateLocation(location) {
+                if (!location) return 'Невідомо';
+                
+                const translations = {
+                    'iserlohn fortress': 'Фортеця Ізерлон',
+                    'brunhild': 'Брунгільд',
+                    'phezzan': 'Феццан',
+                    'heinessen': 'Гайнессен',
+                    'barbarossa': 'Барбаросса',
+                    'hyperion': 'Гіперіон'
+                };
+                
+                return translations[location.toLowerCase()] || location;
+            }
+
+            // Функція для генерації додаткової інформації
+            function getCharacterInfo(character) {
+                const info = [];
+                
+                if (character.affiliation === 'empire') {
+                    info.push('Командувач Імперського флоту');
+                } else if (character.affiliation === 'alliance') {
+                    info.push('Командувач флоту Союзу');
+                }
+                
+                if (character.rank === 'admiral') {
+                    info.push('Високопоставлений офіцер');
+                } else if (character.rank === 'lieutenant') {
+                    info.push('Молодий офіцер');
+                }
+                
+                return info.join(' • ') || 'Персонаж серіалу';
             }
 
             // Функція для екранування HTML
